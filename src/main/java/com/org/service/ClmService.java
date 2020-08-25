@@ -1,7 +1,9 @@
 package com.org.service;
 
+import com.org.config.ClmServiceEndpoints;
 import com.org.domain.LogMessageRequestVO;
 import com.org.domain.LogMessageResponseVO;
+import com.org.utils.RestTemplateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,28 +18,41 @@ import java.util.Arrays;
 public class ClmService {
 
     @Autowired
-    RestTemplate restTemplate;
+    RestTemplateUtil restTemplateUtil;
 
-    public static final Logger logger= LoggerFactory.getLogger(ClmService.class);
+    private ClmServiceEndpoints clmServiceEndpoints;
 
-    ClmService(RestTemplate restTemplate){
-        this.restTemplate=restTemplate;
+    public static final Logger logger = LoggerFactory.getLogger(ClmService.class);
+
+    @Autowired
+    ClmService(ClmServiceEndpoints clmServiceEndpoints) {
+        this.clmServiceEndpoints = clmServiceEndpoints;
     }
 
-    public LogMessageResponseVO logMessage(LogMessageRequestVO requestVO){
+    public LogMessageResponseVO logMessage(LogMessageRequestVO requestVO) {
+
+        String URI = clmServiceEndpoints.getBaseUrl() + clmServiceEndpoints.getPostLogMessageUrl();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        HttpEntity<LogMessageRequestVO> entity = new HttpEntity<LogMessageRequestVO>(requestVO,headers);
+        HttpEntity<LogMessageRequestVO> entity = new HttpEntity<LogMessageRequestVO>(requestVO, headers);
 
         logger.info("Store log for new employee creation/updation: ");
-        logger.info("http://localhost:8081/logMessage : {}",requestVO);
-        HttpEntity response = restTemplate.exchange(
-                "http://localhost:8081/logMessage", HttpMethod.POST, entity, LogMessageResponseVO.class);
+        logger.info("{} : {}", URI, requestVO);
+
+        RestTemplate restTemplate = restTemplateUtil.getRestTemplate();
+
+        /*HttpEntity response = restTemplate.exchange(
+                URI, HttpMethod.POST, entity, LogMessageResponseVO.class);
         logger.info("log stored successfully");
-
         return (LogMessageResponseVO) response.getBody();
-    }
+        */
 
+        LogMessageResponseVO resposneVO = restTemplate.postForObject(URI, requestVO, LogMessageResponseVO.class);
+        logger.info("log stored successfully");
+        return resposneVO;
+
+    }
 
 
 }

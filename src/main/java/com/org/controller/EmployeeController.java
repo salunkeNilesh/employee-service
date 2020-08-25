@@ -1,5 +1,6 @@
 package com.org.controller;
 
+import com.org.constants.Constant;
 import com.org.domain.LogMessageRequestVO;
 import com.org.models.AddEmployeeRequestVO;
 import com.org.models.AddEmployeeResponseVO;
@@ -11,6 +12,7 @@ import com.org.service.EmployeeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +22,7 @@ import java.math.BigDecimal;
 
 @RestController
 public class EmployeeController {
+
 
     @Autowired
     EmployeeRepository employeeRepository;
@@ -31,9 +34,9 @@ public class EmployeeController {
     public static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService,ClmService clmService) {
+    public EmployeeController(EmployeeService employeeService, ClmService clmService) {
         this.employeeService = employeeService;
-        this.clmService=clmService;
+        this.clmService = clmService;
     }
 
 
@@ -44,9 +47,9 @@ public class EmployeeController {
         AddEmployeeResponseVO responseVO = employeeService.addEmployee(requestVO);
 
         //--Call clm service to add log
-        LogMessageRequestVO addLog=new LogMessageRequestVO();
-        addLog.setApplicationId(BigDecimal.valueOf(1));
-        addLog.setApplicationName("Employee Service");
+        LogMessageRequestVO addLog = new LogMessageRequestVO();
+        addLog.setApplicationId(Constant.SERVICE_ID);
+        addLog.setApplicationName(Constant.SERVICE_NAME);
         clmService.logMessage(addLog);
         //
 
@@ -68,7 +71,7 @@ public class EmployeeController {
         logger.info("/employee MethodType: put ");
         EditEmployeeResponseVO responseVO = null;
 
-        if (! employeeRepository.existsById(empId)) {
+        if (!employeeRepository.existsById(empId)) {
             logger.info("employee record with empId : {} not found", empId);
             return ResponseEntity.notFound().build();
         } else {
@@ -76,9 +79,9 @@ public class EmployeeController {
         }
 
         //--Call clm service to add log
-        LogMessageRequestVO addLog=new LogMessageRequestVO();
-        addLog.setApplicationId(BigDecimal.valueOf(1));
-        addLog.setApplicationName("Employee Service");
+        LogMessageRequestVO addLog = new LogMessageRequestVO();
+        addLog.setApplicationId(Constant.SERVICE_ID);
+        addLog.setApplicationName(Constant.SERVICE_NAME);
         clmService.logMessage(addLog);
         //
         return new ResponseEntity<EditEmployeeResponseVO>(responseVO, HttpStatus.OK);
