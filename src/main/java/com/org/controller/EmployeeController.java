@@ -1,5 +1,7 @@
 package com.org.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.org.constants.Constant;
 import com.org.domain.LogMessageRequestVO;
 import com.org.models.AddEmployeeRequestVO;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class EmployeeController {
@@ -42,7 +46,7 @@ public class EmployeeController {
 
     @PostMapping(path = "/addEmployee")
     public @ResponseBody
-    ResponseEntity<AddEmployeeResponseVO> addEmployee(@RequestBody AddEmployeeRequestVO requestVO) {
+    ResponseEntity<AddEmployeeResponseVO> addEmployee(@RequestBody AddEmployeeRequestVO requestVO) throws JsonProcessingException {
         logger.info("/addEmployee");
         AddEmployeeResponseVO responseVO = employeeService.addEmployee(requestVO);
 
@@ -50,6 +54,12 @@ public class EmployeeController {
         LogMessageRequestVO addLog = new LogMessageRequestVO();
         addLog.setApplicationId(Constant.SERVICE_ID);
         addLog.setApplicationName(Constant.SERVICE_NAME);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("message", "new employee record added");
+        message.put("additionalInfo", responseVO.toString());
+        addLog.setMessage(message);
+
         clmService.logMessage(addLog);
         //
 
@@ -62,12 +72,24 @@ public class EmployeeController {
     ResponseEntity<String> deleteEmployee(@PathVariable int empId) {
         logger.info("/employee MethodType: delete ");
         employeeService.deleteEmployee(empId);
+        //--Call clm service to add log
+        LogMessageRequestVO addLog = new LogMessageRequestVO();
+        addLog.setApplicationId(Constant.SERVICE_ID);
+        addLog.setApplicationName(Constant.SERVICE_NAME);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("message", "employee record deleted");
+        addLog.setMessage(message);
+
+        clmService.addDeleteLog(addLog);
+        //
+
         return new ResponseEntity("employee with empId : " + empId + " successfully deleted", HttpStatus.OK);
     }
 
     @PutMapping(path = "/employee/{empId}")
     public @ResponseBody
-    ResponseEntity<EditEmployeeResponseVO> editEmployee(@PathVariable int empId, @RequestBody EditEmployeeRequestVO requestVO) {
+    ResponseEntity<EditEmployeeResponseVO> editEmployee(@PathVariable int empId, @RequestBody EditEmployeeRequestVO requestVO) throws JsonProcessingException {
         logger.info("/employee MethodType: put ");
         EditEmployeeResponseVO responseVO = null;
 
@@ -82,6 +104,13 @@ public class EmployeeController {
         LogMessageRequestVO addLog = new LogMessageRequestVO();
         addLog.setApplicationId(Constant.SERVICE_ID);
         addLog.setApplicationName(Constant.SERVICE_NAME);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("message", "employee record updated");
+        message.put("additionalInfo", responseVO.toString());
+
+        addLog.setMessage(message);
+
         clmService.logMessage(addLog);
         //
         return new ResponseEntity<EditEmployeeResponseVO>(responseVO, HttpStatus.OK);

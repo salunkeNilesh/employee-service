@@ -11,11 +11,12 @@ import java.util.Map;
 @Setter
 @ToString
 public class LogMessageResponseVO {
+
     private Long logid;
 
     private BigDecimal applicationId;
 
     private String applicationName;
 
-    private Map<String,Object> message;
+    private Map<String, Object> message;
 }

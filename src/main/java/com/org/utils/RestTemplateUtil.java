@@ -4,6 +4,7 @@ import com.org.constants.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -37,6 +38,7 @@ public class RestTemplateUtil {
 
     }
 
+    @LoadBalanced
     public RestTemplate getRestTemplate() {
         restTemplate = new RestTemplate(getClientHttpRequestFactory());
         return restTemplate;

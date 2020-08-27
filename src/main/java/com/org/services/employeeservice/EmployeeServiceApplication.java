@@ -3,6 +3,8 @@ package com.org.services.employeeservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -11,6 +13,8 @@ import org.springframework.web.client.RestTemplate;
 @ComponentScan(basePackages = {"com.org"})
 @EntityScan("com.org")
 @EnableJpaRepositories("com.org")
+@EnableHystrixDashboard
+@EnableCircuitBreaker
 @SpringBootApplication
 public class EmployeeServiceApplication {
 
