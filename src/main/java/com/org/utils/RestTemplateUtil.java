@@ -37,8 +37,7 @@ public class RestTemplateUtil {
         return simpleClientHttpRequestFactory;
 
     }
-
-    @LoadBalanced
+    
     public RestTemplate getRestTemplate() {
         restTemplate = new RestTemplate(getClientHttpRequestFactory());
         return restTemplate;

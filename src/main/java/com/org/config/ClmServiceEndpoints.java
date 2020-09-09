@@ -15,5 +15,7 @@ import org.springframework.stereotype.Component;
 public class ClmServiceEndpoints {
     private String baseUrl;
     private String postLogMessageUrl;
+    private int maxRetryLimit;
+    private int retryTimeInterval;
 
 }
